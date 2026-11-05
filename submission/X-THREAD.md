@@ -41,7 +41,7 @@ won? swap your $WIF straight into a real Stock Token like NVDA, without leaving 
 
 every lineup is a share card with a referral link, and anyone can sponsor a pot.
 
-repo: github.com/neromtoobad/flat-street
+repo: github.com/neromtoobad/wifleague
 contract (verified): robinhoodchain.blockscout.com/address/0x57278efe62b9e0b0b20f2504f4fdb1d5df4f90c6
 
 ---

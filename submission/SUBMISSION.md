@@ -13,7 +13,7 @@ Stock Tokens · games · onboarding
 
 ## Links
 - Live app: https://wifleague.nerom.site
-- Repo (public): https://github.com/neromtoobad/flat-street
+- Repo (public): https://github.com/neromtoobad/wifleague
 - Contract (verified): https://robinhoodchain.blockscout.com/address/0x57278efe62b9e0b0b20f2504f4fdb1d5df4f90c6?tab=contract
 - Demo video: _add link_
 - X thread: _add link_
