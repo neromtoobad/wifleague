@@ -1,4 +1,4 @@
-# Flat Street
+# WIF League
 
 **The fantasy stock league paid in $WIF.** Draft five Stock Tokens on Robinhood Chain, enter with $WIF, and the market is the scoreboard. Prices come from Chainlink, settlement is onchain, and 10% of every pot is burned.
 
@@ -40,7 +40,7 @@ shared lineup cards (X) + 5% referrals + sponsored pots
 
 ## Why the scoring can't be gamed
 
-Other score-by-price games read a pool's spot price, which one large swap can move, or let whoever calls `settle` choose the moment. Flat Street does neither.
+Other score-by-price games read a pool's spot price, which one large swap can move, or let whoever calls `settle` choose the moment. WIF League does neither.
 
 - `lock()` and `finish()` take a **Chainlink round id hint per asset**. The contract checks that this round was published at or before the deadline, and that the next round was published after it (or doesn't exist yet).
 - So the start and end prices are fixed by the clock. They don't depend on who calls the function or when.
@@ -79,9 +79,9 @@ FS_API=http://localhost:8787 VITE_RPC=http://127.0.0.1:8546 vite --config app/vi
 | | |
 |---|---|
 | $WIF | `0x5173b8eA6923c2d40267890D45C46a3480954773` |
-| FlatStreet | [`0x57278efe62b9e0b0b20f2504f4fdb1d5df4f90c6`](https://robinhoodchain.blockscout.com/address/0x57278efe62b9e0b0b20f2504f4fdb1d5df4f90c6?tab=contract) (verified) |
+| League contract (`FlatStreet`) | [`0x57278efe62b9e0b0b20f2504f4fdb1d5df4f90c6`](https://robinhoodchain.blockscout.com/address/0x57278efe62b9e0b0b20f2504f4fdb1d5df4f90c6?tab=contract) (verified) |
 | Stock Tokens + feeds | [`shared/assets.json`](shared/assets.json) (from the Robinhood Chain token registry and Chainlink's feed list) |
 
 ---
 
-Flat Street is an independent project. It is not affiliated with, endorsed by, or sponsored by Robinhood Markets, Inc. $WIF is a memecoin with no promise of value or return. Stock Tokens carry market risk and are restricted in some countries.
+WIF League is an independent project. It is not affiliated with, endorsed by, or sponsored by Robinhood Markets, Inc. $WIF is a memecoin with no promise of value or return. Stock Tokens carry market risk and are restricted in some countries.

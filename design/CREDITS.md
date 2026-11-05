@@ -1,4 +1,4 @@
-# Higgsfield credits — Flat Street
+# Higgsfield credits — WIF League
 
 | Date | What | Model | Credits |
 |---|---|---|---|

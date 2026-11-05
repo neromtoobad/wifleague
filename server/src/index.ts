@@ -9,7 +9,7 @@ import { tick } from "./keeper.ts";
 import { lineupCard, roundLabel } from "./og.ts";
 
 const app = new Hono();
-const PUBLIC_URL = process.env.PUBLIC_URL ?? "https://flatstreet.nerom.site";
+const PUBLIC_URL = process.env.PUBLIC_URL ?? "https://wifleague.nerom.site";
 
 // rounds without their entry lists (those can get big) + everything the home screen needs
 app.get("/api/state", (c) =>
@@ -53,7 +53,7 @@ app.get("/s/:round/:entry", (c) => {
   const { round, entry } = c.req.param();
   const r = state.rounds[Number(round)];
   const e = r?.entries[Number(entry)];
-  const title = r && e ? `My five for ${roundLabel(r)} · Flat Street` : "Flat Street";
+  const title = r && e ? `My five for ${roundLabel(r)} · WIF League` : "WIF League";
   const img = `${PUBLIC_URL}/og/${round}/${entry}.png?v=${state.updatedAt}`;
   const ref = e ? `?ref=${e.player}` : "";
   return c.html(`<!doctype html><html><head><meta charset="utf-8"><title>${title}</title>
@@ -87,7 +87,7 @@ const loop = (fn: () => Promise<unknown>, ms: number, name: string) => {
 
 const port = Number(process.env.PORT ?? 8787);
 serve({ fetch: app.fetch, port });
-console.log(`flat street on :${port} · contract ${deployment?.address ?? "(none)"} · keeper ${keeperAccount?.address ?? "off"}`);
+console.log(`wif league on :${port} · contract ${deployment?.address ?? "(none)"} · keeper ${keeperAccount?.address ?? "off"}`);
 
 const t0 = Date.now();
 await refreshAssets().catch((e) => console.error("[assets]", e.message));

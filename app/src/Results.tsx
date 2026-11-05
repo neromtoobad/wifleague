@@ -57,7 +57,7 @@ export default function Results({ ctx }: { ctx: Ctx }) {
             <span className="flame two" />
           </div>
           <div className="furnace-body">
-            <span className="label">The furnace · $WIF burned by Flat Street</span>
+            <span className="label">The furnace · $WIF burned by WIF League</span>
             <strong className="display">{fmtWif(state.totalBurned)}</strong>
             <div className="meter">
               <span style={{ width: `${Math.min(100, (burned / goal) * 100)}%` }} />
@@ -191,6 +191,9 @@ function Podium({ ctx, round }: { ctx: Ctx; round: Round }) {
 }
 
 const KYBER = "https://aggregator-api.kyberswap.com/robinhood/api/v1";
+// Stock Tokens can't go to these jurisdictions (docs.robinhood.com/rhj/restricted-jurisdictions)
+const RESTRICTED_LIST = "https://docs.robinhood.com/rhj/restricted-jurisdictions";
+const RESTRICTED = new Set(["US", "CA", "GB", "CH", "CU", "BY", "IR", "KP", "RU", "SY", "UA", "SS", "SD", "MM", "VE"]);
 
 /** Swap freshly claimed $WIF into a real Stock Token through the KyberSwap aggregator. */
 function TakeAsStock({ ctx, amount }: { ctx: Ctx; amount: bigint }) {
@@ -200,11 +203,21 @@ function TakeAsStock({ ctx, amount }: { ctx: Ctx; amount: bigint }) {
   const [ok, setOk] = useState(false);
   const [busy, setBusy] = useState<string | null>(null);
   const [msg, setMsg] = useState<string | null>(null);
+  const [blocked, setBlocked] = useState(false);
   const asset = state.assets[to];
 
+  // IP check on top of the self-certification below; a failed lookup leaves the checkbox as the gate
   useEffect(() => {
+    fetch("https://api.country.is/")
+      .then((r) => r.json())
+      .then((d) => setBlocked(RESTRICTED.has(String(d?.country ?? "").toUpperCase())))
+      .catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    if (blocked) return;
     setQuote(null);
-    fetch(`${KYBER}/routes?tokenIn=${WIF}&tokenOut=${asset.token}&amountIn=${amount}`, { headers: { "x-client-id": "flatstreet" } })
+    fetch(`${KYBER}/routes?tokenIn=${WIF}&tokenOut=${asset.token}&amountIn=${amount}`, { headers: { "x-client-id": "wifleague" } })
       .then((r) => r.json())
       .then((d) => {
         const rs = d?.data?.routeSummary;
@@ -212,17 +225,17 @@ function TakeAsStock({ ctx, amount }: { ctx: Ctx; amount: bigint }) {
         else setMsg("No route right now.");
       })
       .catch(() => setMsg("Quote unavailable."));
-  }, [to, amount]);
+  }, [to, amount, blocked]);
 
   async function swap() {
-    if (!quote) return;
+    if (!quote || blocked) return;
     setMsg(null);
     try {
       await ensureChain();
       const w = walletClient(account!);
       const built = await fetch(`${KYBER}/route/build`, {
         method: "POST",
-        headers: { "content-type": "application/json", "x-client-id": "flatstreet" },
+        headers: { "content-type": "application/json", "x-client-id": "wifleague" },
         body: JSON.stringify({ routeSummary: quote.route, sender: account, recipient: account, slippageTolerance: 100 }),
       }).then((r) => r.json());
       if (!built?.data?.data) throw new Error(built?.message ?? "Could not build the swap");
@@ -240,6 +253,19 @@ function TakeAsStock({ ctx, amount }: { ctx: Ctx; amount: bigint }) {
     }
   }
 
+  if (blocked)
+    return (
+      <div className="take">
+        <h4>Take it as a stock</h4>
+        <p className="hint">
+          Stock Tokens aren't available where you are, so this swap is switched off. Your $WIF winnings are yours to keep.{" "}
+          <a href={RESTRICTED_LIST} target="_blank" rel="noreferrer">
+            Restricted countries ↗
+          </a>
+        </p>
+      </div>
+    );
+
   return (
     <div className="take">
       <h4>Take it as a stock</h4>
@@ -253,7 +279,11 @@ function TakeAsStock({ ctx, amount }: { ctx: Ctx; amount: bigint }) {
       </select>
       <p className="num">{quote ? `≈ ${quote.out.toFixed(4)} ${asset.symbol} (${usd(quote.usd)})` : "Quoting…"}</p>
       <label className="hint check">
-        <input type="checkbox" checked={ok} onChange={(e) => setOk(e.target.checked)} /> I'm not in a country where Stock Tokens are restricted.
+        <input type="checkbox" checked={ok} onChange={(e) => setOk(e.target.checked)} /> I'm not a U.S. person and I'm not in a country on the{" "}
+        <a href={RESTRICTED_LIST} target="_blank" rel="noreferrer">
+          Stock Token restricted list
+        </a>
+        .
       </label>
       <button className="btn block" disabled={!quote || !ok || !!busy} onClick={swap}>
         {busy ?? `Swap to ${asset.symbol}`}

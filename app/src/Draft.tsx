@@ -213,7 +213,7 @@ function Lineup({ ctx, round, picks, setPicks, captain }: { ctx: Ctx; round: Rou
 
   if (done) {
     const share = `${location.origin}/s/${done.round}/${done.entry}`;
-    const text = encodeURIComponent(`My five are on the field at Flat Street — the fantasy stock league paid in $WIF. Beat me:`);
+    const text = encodeURIComponent(`My five are on the field at WIF League — the fantasy stock league paid in $WIF. Beat me:`);
     return (
       <div className="panel filed">
         <Confetti />

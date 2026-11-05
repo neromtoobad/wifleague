@@ -87,10 +87,10 @@ export function lineupCard(r: Round, e: Entry): Buffer {
   <rect x="20" y="20" width="1160" height="590" rx="34" fill="url(#stripes)"/>
 
   <image href="${mascot.get("flatty")}" x="46" y="34" width="86" height="86"/>
-  <text x="138" y="102" ${D9} font-size="58" fill="#ffffff">FLAT</text>
+  <text x="138" y="102" ${D9} font-size="58" fill="#ffffff">WIF</text>
   <g transform="rotate(-3 300 80)">
-    <rect x="262" y="44" width="186" height="66" rx="12" fill="${LIME}" stroke="${INK}" stroke-width="4"/>
-    <text x="276" y="100" ${D9} font-size="58" fill="${INK}">STREET</text>
+    <rect x="236" y="44" width="200" height="66" rx="12" fill="${LIME}" stroke="${INK}" stroke-width="4"/>
+    <text x="250" y="100" ${D9} font-size="58" fill="${INK}">LEAGUE</text>
   </g>
   <rect x="${1140 - roundLabel(r).length * 9.4 - 44}" y="52" width="${roundLabel(r).length * 9.4 + 44}" height="48" rx="24" fill="${INK}"/>
   <text x="${1140 - 20}" y="86" text-anchor="end" ${D8} font-size="28" fill="${LIME}">${esc(roundLabel(r).toUpperCase())}</text>
@@ -109,7 +109,7 @@ export function lineupCard(r: Round, e: Entry): Buffer {
   <text x="62" y="530" ${D9} font-size="40" fill="#ffffff">THINK YOU CAN BEAT THIS FIVE?</text>
   <text x="62" y="568" ${B6} font-size="22" fill="#e5e9ff">Five Stock Tokens · Chainlink prices · paid in $WIF · 10% burns</text>
   <rect x="842" y="500" width="298" height="60" rx="30" fill="${CARD}" stroke="${INK}" stroke-width="4"/>
-  <text x="991" y="540" text-anchor="middle" ${D9} font-size="30" fill="${INK}">FLATSTREET.NEROM.SITE</text>
+  <text x="991" y="540" text-anchor="middle" ${D9} font-size="30" fill="${INK}">WIFLEAGUE.NEROM.SITE</text>
 </svg>`;
   return new Resvg(svg, { font: { fontFiles, loadSystemFonts: false, defaultFontFamily: "Barlow" } }).render().asPng();
 }

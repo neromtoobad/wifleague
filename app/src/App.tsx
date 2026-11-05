@@ -114,7 +114,7 @@ export default function App() {
         <a href="#/" className="logo">
           <Mascot name="flatty" size={44} />
           <span className="display">
-            Flat<span>Street</span>
+            WIF<span>League</span>
           </span>
         </a>
         <nav className="nav">
@@ -124,7 +124,7 @@ export default function App() {
           {tab("#/how", "How to play", route.startsWith("/how"))}
         </nav>
         <div className="top-right">
-          <span className="wif-chip" title="$WIF price and total burned by Flat Street">
+          <span className="wif-chip" title="$WIF price and total burned by WIF League">
             <b>$WIF</b> {state.wifUsd ? `$${state.wifUsd.toFixed(5)}` : "—"}
             <i>{fmtWif(state.totalBurned)} burned{burnedUsd > 1 ? ` · ${usd(burnedUsd)}` : ""}</i>
           </span>
@@ -148,8 +148,12 @@ export default function App() {
       <main>{page}</main>
       <footer className="foot">
         <span>
-          Flat Street is an independent project built on Robinhood Chain for the World is Flat hackathon. Not affiliated with Robinhood Markets, Inc.
-          $WIF is a memecoin with no promise of value. Stock Tokens carry market risk and are not available in every country.
+          WIF League is an independent project built on Robinhood Chain for the World is Flat hackathon. Not affiliated with Robinhood Markets, Inc.
+          $WIF is a memecoin with no promise of value. Stock Tokens carry market risk and are not offered to U.S. persons or in{" "}
+          <a href="https://docs.robinhood.com/rhj/restricted-jurisdictions" target="_blank" rel="noreferrer">
+            restricted countries
+          </a>
+          .
         </span>
         {state.contract && (
           <a href={`https://robinhoodchain.blockscout.com/address/${state.contract}`} target="_blank" rel="noreferrer">
