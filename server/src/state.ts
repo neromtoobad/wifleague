@@ -4,6 +4,7 @@ import { WIF } from "../../shared/chain.ts";
 import assetList from "../../shared/assets.json" with { type: "json" };
 import { pub, deployment } from "./chain.ts";
 import { history, type Point } from "./feeds.ts";
+import { tierOf } from "../../shared/tiers.ts";
 
 export const STATUS = ["none", "open", "live", "scoring", "settled", "cancelled"] as const;
 export type Status = (typeof STATUS)[number];
@@ -121,11 +122,13 @@ export async function refreshRounds() {
     }),
   );
 
-  // a later round with the same window replaces an empty one (e.g. the Week re-opened at a lower fee)
+  // an empty open round at a retired price is hidden once a current tier covers the same window
+  // (round 2 opened the Week at 5,000 before the tiers existed)
   const replaced = (id: number, r: (typeof rounds)[number]["r"]) =>
     STATUS[r.status] === "open" &&
     r.entryCount === 0 &&
-    rounds.some((o) => o.id > id && o.r.lockTime === r.lockTime && o.r.endTime === r.endTime);
+    !tierOf(r.entryFee) &&
+    rounds.some((o) => o.id !== id && o.r.lockTime === r.lockTime && o.r.endTime === r.endTime && tierOf(o.r.entryFee));
 
   state.rounds = rounds.filter(({ id, r }) => !replaced(id, r)).map(({ id, r, entries, start, rets }) => {
     const status = STATUS[r.status];

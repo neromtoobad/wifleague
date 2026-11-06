@@ -3,11 +3,12 @@ import { flatStreetAbi } from "../../shared/abi.ts";
 import { pub, wallet, keeperAccount, deployment } from "./chain.ts";
 import { hintsAt } from "./feeds.ts";
 import { state, refreshRounds } from "./state.ts";
+import { TIERS } from "../../shared/tiers.ts";
 
 // Schedule (US equities, EST from Nov 1): the Week locks Monday 00:00 UTC and ends at Friday's closing
 // bell (21:00 UTC); a Sprint runs each weekday from the opening bell (14:30) to the close (21:00).
-const WEEK_FEE = parseUnits(process.env.WEEK_FEE ?? "1000", 18);
-const SPRINT_FEE = parseUnits(process.env.SPRINT_FEE ?? "1000", 18);
+// Each game opens once per stake tier (shared/tiers.ts), so players choose how much $WIF to put on their five.
+const FEES = TIERS.map((t) => parseUnits(String(t.fee), 18));
 const DAY = 86_400;
 
 export function nextWeek(now: number) {
@@ -65,14 +66,14 @@ export async function tick() {
     await refreshRounds();
     for (const r of state.rounds.filter((r) => r.status === "scoring")) await send("settle", [BigInt(r.id), 500n]);
 
-    const upcoming = (kind: "week" | "sprint") => state.rounds.some((r) => r.kind === kind && r.status === "open" && r.lockTime > now);
-    if (!upcoming("week")) {
-      const w = nextWeek(now);
-      await send("createRound", [BigInt(w.lock), BigInt(w.end), WEEK_FEE]);
-    }
-    if (!upcoming("sprint")) {
-      const s = nextSprint(now);
-      await send("createRound", [BigInt(s.lock), BigInt(s.end), SPRINT_FEE]);
+    // top up each game's next window with any tier it's missing (the first open window of that game is reused)
+    for (const kind of ["week", "sprint"] as const) {
+      const open = state.rounds.filter((r) => r.kind === kind && r.status === "open" && r.lockTime > now).sort((a, b) => a.lockTime - b.lockTime);
+      const slot = open[0] ? { lock: open[0].lockTime, end: open[0].endTime } : kind === "week" ? nextWeek(now) : nextSprint(now);
+      for (const fee of FEES) {
+        const has = open.some((r) => r.lockTime === slot.lock && r.endTime === slot.end && BigInt(r.entryFee) === fee);
+        if (!has) await send("createRound", [BigInt(slot.lock), BigInt(slot.end), fee]);
+      }
     }
     await refreshRounds();
   } catch (e) {

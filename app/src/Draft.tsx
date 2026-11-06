@@ -4,13 +4,16 @@ import { flatStreetAbi, erc20Abi } from "../../shared/abi.ts";
 import { WIF } from "../../shared/chain.ts";
 import type { Ctx } from "./App.tsx";
 import { pub, walletClient, ensureChain, fmtWif, wif, usd, pct, tone, roundTitle, roundDates, clock, TEAMS, teamOf, mascotFor, formOf, type Asset, type Round } from "./lib.ts";
-import { Mascot, Spark, Clock, Confetti } from "./ui.tsx";
+import { Mascot, Spark, Clock, Confetti, LineupCard } from "./ui.tsx";
+import { tierOf } from "../../shared/tiers.ts";
 
 export default function Draft({ ctx }: { ctx: Ctx }) {
   const { state, now } = ctx;
   const open = state.rounds.filter((r) => r.status === "open" && r.lockTime > now).sort((a, b) => a.lockTime - b.lockTime);
   const [roundId, setRoundId] = useState<number | null>(null);
-  const round = open.find((r) => r.id === roundId) ?? open.find((r) => r.kind === "week") ?? open[0] ?? null;
+  const cheapest = (kind: Round["kind"]) =>
+    open.filter((r) => r.kind === kind).sort((a, b) => a.lockTime - b.lockTime || Number(BigInt(a.entryFee) - BigInt(b.entryFee)))[0];
+  const round = open.find((r) => r.id === roundId) ?? cheapest("week") ?? open[0] ?? null;
 
   const [picks, setPicks] = useState<number[]>([]); // picks[0] is the captain
   const [team, setTeam] = useState("all");
@@ -29,7 +32,7 @@ export default function Draft({ ctx }: { ctx: Ctx }) {
 
   return (
     <div className="draft">
-      {round ? <RoundHero ctx={ctx} round={round} rounds={open} setRoundId={setRoundId} /> : <NoRound />}
+      {round ? <RoundHero ctx={ctx} round={round} rounds={open} cheapest={cheapest} setRoundId={setRoundId} /> : <NoRound />}
 
       <div className="draft-grid">
         <section className="market">
@@ -78,34 +81,70 @@ export default function Draft({ ctx }: { ctx: Ctx }) {
   );
 }
 
-function RoundHero({ ctx, round, rounds, setRoundId }: { ctx: Ctx; round: Round; rounds: Round[]; setRoundId: (id: number) => void }) {
+function RoundHero({
+  ctx,
+  round,
+  rounds,
+  cheapest,
+  setRoundId,
+}: {
+  ctx: Ctx;
+  round: Round;
+  rounds: Round[];
+  cheapest: (kind: Round["kind"]) => Round | undefined;
+  setRoundId: (id: number) => void;
+}) {
   const { state, now } = ctx;
-  const pot = BigInt(round.pot) + BigInt(state.rollover);
+  const pot = BigInt(round.pot);
   const potUsd = wif(pot) * state.wifUsd;
+  const games = (["sprint", "week"] as const).map(cheapest).filter((r): r is Round => !!r);
+  // the stake tiers open for this game's window, cheapest first
+  const stakes = rounds
+    .filter((r) => r.kind === round.kind && r.lockTime === round.lockTime && r.endTime === round.endTime)
+    .sort((a, b) => Number(BigInt(a.entryFee) - BigInt(b.entryFee)));
   return (
     <section className="hero">
       <div className="hero-main">
         <div className="mode-tabs">
-          {rounds.map((r) => (
-            <button key={r.id} className={r.id === round.id ? "on" : ""} onClick={() => setRoundId(r.id)}>
-              <b>{roundTitle(r)}</b>
-              <small>{fmtWif(r.entryFee)} $WIF entry</small>
+          {games.map((g) => (
+            <button key={g.kind} className={g.kind === round.kind ? "on" : ""} onClick={() => setRoundId(g.id)}>
+              <b>{roundTitle(g)}</b>
+              <small>{g.kind === "week" ? "Mon → Fri close" : "one trading day"}</small>
             </button>
           ))}
         </div>
+        {stakes.length > 1 && (
+          <div className="stakes" role="radiogroup" aria-label="Pick your stake">
+            <span className="stakes-label">Pick your stake</span>
+            {stakes.map((r) => {
+              const t = tierOf(r.entryFee);
+              return (
+                <button key={r.id} role="radio" aria-checked={r.id === round.id} className={`stake ${r.id === round.id ? "on" : ""}`} onClick={() => setRoundId(r.id)}>
+                  <b>{t ? `${t.fee / 1000}K` : fmtWif(r.entryFee)}</b>
+                  <span>{t?.name ?? "$WIF"}</span>
+                  <small>
+                    {r.entryCount} in · pot {fmtWif(r.pot)}
+                  </small>
+                </button>
+              );
+            })}
+          </div>
+        )}
         <h1 className="display hero-title">
           Draft five stocks.
           <br />
           <span className="hl">The market plays.</span>
         </h1>
         <p className="hero-sub">
-          {roundDates(round)} · locks {clock(round.lockTime)}. Top three split 80% of the pot, 10% of it burns.
+          {roundDates(round)} · locks {clock(round.lockTime)}. {fmtWif(round.entryFee)} $WIF a lineup. Top three split 80% of the pot, 10% of it burns.
         </p>
         <div className="hero-stats">
           <div className="sticker lime">
             <span>Prize pot</span>
             <strong>{fmtWif(pot)}</strong>
-            <em>$WIF{potUsd > 0.5 ? ` · ≈ ${usd(potUsd)}` : ""}</em>
+            <em>
+              $WIF{potUsd > 0.5 ? ` · ≈ ${usd(potUsd)}` : ""}
+            </em>
           </div>
           <div className="sticker">
             <span>Draft closes in</span>
@@ -219,11 +258,14 @@ function Lineup({ ctx, round, picks, setPicks, captain }: { ctx: Ctx; round: Rou
         <Confetti />
         <span className="stamp">You're in!</span>
         <h3 className="display">Lineup locked in.</h3>
-        <img className="card-preview" src={`/og/${done.round}/${done.entry}.png?t=${Date.now()}`} alt="Your lineup card" />
+        <LineupCard round={done.round} entry={done.entry} />
         <a className="btn lime block" href={`https://x.com/intent/post?text=${text}&url=${encodeURIComponent(share)}`} target="_blank" rel="noreferrer">
           Post your card on X
         </a>
         <p className="hint">Anyone who enters through your link pays you 5% of their entry.</p>
+        <a className="btn block" href="#/me">
+          See my team
+        </a>
         <button className="btn ghost block" onClick={() => setDone(null)}>
           Draft another lineup (max 3)
         </button>

@@ -23,8 +23,10 @@ Stock Tokens · games · onboarding
 WIF League is fantasy sports where the players are Stock Tokens. You draft five of the 35 Stock Tokens and ETFs on Robinhood Chain that have a Chainlink feed, make one of them your captain (it counts double), and enter with $WIF. The market plays the match.
 
 There are two games on a loop:
-- **The Sprint**: one trading day, bell to bell, 1,000 $WIF a lineup.
-- **The Week**: Monday to Friday's close, 1,000 $WIF a lineup.
+- **The Sprint**: one trading day, bell to bell.
+- **The Week**: Monday to Friday's close.
+
+Each game opens at three stakes, each its own round with its own pot: Kickabout (1,000 $WIF), Pro League (10,000) and Whale Cup (100,000). You only play against people who put up the same stake.
 
 When a round ends the contract pays the pot out by itself: 50 / 30 / 20 to the top three, 10% burned with $WIF's own `burn()`, and 10% rolled into the next pot. Winners can swap their $WIF straight into a real Stock Token like NVDA through KyberSwap's Robinhood Chain router, without leaving the app.
 

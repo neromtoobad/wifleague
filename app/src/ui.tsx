@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { mascotSrc } from "./lib.ts";
 
 /** A team mascot whose body language follows the data: bounces when up, shivers when down. */
@@ -57,6 +58,33 @@ export function Confetti() {
           }}
         />
       ))}
+    </div>
+  );
+}
+
+/**
+ * The lineup share card from /og. The server only learns about a new entry on its next chain poll (≤15 s),
+ * so a fresh card can 404 at first: keep a stable src and retry until it prints.
+ */
+export function LineupCard({ round, entry, className = "" }: { round: number; entry: number; className?: string }) {
+  const [tries, setTries] = useState(0);
+  const [ready, setReady] = useState(false);
+  const src = `/og/${round}/${entry}.png${tries ? `?try=${tries}` : ""}`;
+  return (
+    <div className={`lineup-card ${ready ? "ready" : ""} ${className}`}>
+      {!ready && (
+        <div className="lineup-card-wait">
+          <span className="spinner" />
+          {tries > 20 ? "Card's taking a while. Refresh in a minute." : "Printing your card…"}
+        </div>
+      )}
+      <img
+        key={src}
+        src={src}
+        alt="Lineup card"
+        onLoad={() => setReady(true)}
+        onError={() => tries <= 20 && setTimeout(() => setTries((t) => t + 1), 3000)}
+      />
     </div>
   );
 }

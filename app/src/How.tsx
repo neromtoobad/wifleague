@@ -6,7 +6,7 @@ export default function How({ ctx }: { ctx: Ctx }) {
   const c = ctx.state.contract;
   const steps: [string, string, string][] = [
     ["flatty", "Draft five", `Pick five of the ${ctx.state.assets.length} Stock Tokens and ETFs on Robinhood Chain that have a Chainlink price feed. Your first pick is the captain, and its move counts double.`],
-    ["coin", "Enter with $WIF", "The Week runs Monday to Friday's closing bell. The Sprint runs one trading day, bell to bell. Your entry goes straight into the pot the contract holds. Up to three lineups per wallet."],
+    ["coin", "Enter with $WIF", "The Week runs Monday to Friday's closing bell. The Sprint runs one trading day, bell to bell. Pick your stake: 1K, 10K or 100K $WIF, and each stake is its own league with its own pot. Your entry goes straight into the pot the contract holds. Up to three lineups per wallet."],
     ["rocket", "The market plays", "Your score is the average move of your five, captain counted twice. Start and end prices are the Chainlink rounds that were current at the exact lock and closing times, checked onchain."],
     ["golem", "The pot pays out", "80% to the top three (50 / 30 / 20). 10% burned with $WIF's own burn(). 10% rolls into the next pot. A referred entry pays 5% of its fee to whoever shared the link."],
     ["bull", "Take it as a stock", "Winners claim $WIF and can swap it straight into a real Stock Token like NVDA, routed by KyberSwap on Robinhood Chain."],

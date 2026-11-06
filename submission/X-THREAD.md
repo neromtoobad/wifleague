@@ -12,8 +12,10 @@ built for @WIFonRH's World is Flat hackathon
 **2/**
 two games on a loop:
 
-the Sprint: one trading day, bell to bell, 1,000 $WIF
-the Week: Monday to Friday's close, 1,000 $WIF
+the Sprint: one trading day, bell to bell
+the Week: Monday to Friday's close
+
+pick your stake: 1K, 10K or 100K $WIF. each one is its own league with its own pot.
 
 your first pick is captain and counts double. top 3 split 80% of the pot.
 

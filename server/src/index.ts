@@ -27,7 +27,7 @@ app.get("/api/state", (c) =>
 );
 
 app.get("/api/round/:id", (c) => {
-  const r = state.rounds[Number(c.req.param("id"))];
+  const r = roundById(c.req.param("id"));
   return r ? c.json(r) : c.json({ error: "no such round" }, 404);
 });
 
@@ -42,7 +42,7 @@ app.get("/api/player/:addr", async (c) => {
 });
 
 app.get("/og/:round/:entry", (c) => {
-  const r = state.rounds[Number(c.req.param("round"))];
+  const r = roundById(c.req.param("round"));
   const e = r?.entries[Number(c.req.param("entry").replace(/\.png$/, ""))];
   if (!r || !e) return c.text("not found", 404);
   return c.body(new Uint8Array(lineupCard(r, e)), 200, { "content-type": "image/png", "cache-control": "public, max-age=300" });
@@ -51,7 +51,7 @@ app.get("/og/:round/:entry", (c) => {
 // share link: X/Telegram read the meta tags, people get bounced into the app
 app.get("/s/:round/:entry", (c) => {
   const { round, entry } = c.req.param();
-  const r = state.rounds[Number(round)];
+  const r = roundById(round);
   const e = r?.entries[Number(entry)];
   const title = r && e ? `My five for ${roundLabel(r)} · WIF League` : "WIF League";
   const img = `${PUBLIC_URL}/og/${round}/${entry}.png?v=${state.updatedAt}`;
@@ -70,6 +70,11 @@ if (existsSync(dist)) {
   app.use("/*", serveStatic({ root }));
   const index = readFileSync(new URL("index.html", dist), "utf8");
   app.get("*", (c) => c.html(index));
+}
+
+// rounds are looked up by onchain id, not array position (replaced rounds are left out of the list)
+function roundById(id: string) {
+  return state.rounds.find((r) => r.id === Number(id));
 }
 
 function topOf(entries: (typeof state.rounds)[number]["entries"]) {

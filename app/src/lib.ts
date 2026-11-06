@@ -91,7 +91,8 @@ export const walletClient = (account: Hex) =>
 export const wif = (wei: string | bigint) => Number(BigInt(wei) / 10n ** 14n) / 1e4;
 export const fmtWif = (wei: string | bigint) => {
   const n = wif(wei);
-  return n >= 1e6 ? `${(n / 1e6).toFixed(2)}M` : n >= 1e4 ? `${(n / 1e3).toFixed(1)}K` : n.toLocaleString("en-US", { maximumFractionDigits: 0 });
+  // 100K not 100.0K, 12.5K stays 12.5K
+  return n >= 1e6 ? `${+(n / 1e6).toFixed(2)}M` : n >= 1e4 ? `${+(n / 1e3).toFixed(1)}K` : n.toLocaleString("en-US", { maximumFractionDigits: 0 });
 };
 export const usd = (n: number) =>
   n >= 1000 ? `$${n.toLocaleString("en-US", { maximumFractionDigits: 0 })}` : `$${n.toFixed(2)}`;

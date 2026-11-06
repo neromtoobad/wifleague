@@ -6,6 +6,7 @@ import Draft from "./Draft.tsx";
 import RoundView from "./RoundView.tsx";
 import Results from "./Results.tsx";
 import How from "./How.tsx";
+import MyTeam from "./Mine.tsx";
 
 export type Ctx = {
   state: State;
@@ -99,6 +100,7 @@ export default function App() {
   else if (route.startsWith("/live")) page = live.length ? <RoundView ctx={ctx} id={live[0].id} /> : <NoLive ctx={ctx} />;
   else if (route.startsWith("/results")) page = <Results ctx={ctx} />;
   else if (route.startsWith("/how")) page = <How ctx={ctx} />;
+  else if (route.startsWith("/me")) page = <MyTeam ctx={ctx} />;
   else page = <Draft ctx={ctx} />;
 
   const tab = (h: string, label: string, active: boolean, n = 0) => (
@@ -120,6 +122,7 @@ export default function App() {
         <nav className="nav">
           {tab("#/", "Draft", route === "/" || route === "")}
           {tab("#/live", "Live", route.startsWith("/live") || !!m, live.length)}
+          {tab("#/me", "My team", route.startsWith("/me"))}
           {tab("#/results", "Results", route.startsWith("/results"))}
           {tab("#/how", "How to play", route.startsWith("/how"))}
         </nav>
@@ -129,7 +132,7 @@ export default function App() {
             <i>{fmtWif(state.totalBurned)} burned{burnedUsd > 1 ? ` · ${usd(burnedUsd)}` : ""}</i>
           </span>
           {account ? (
-            <a className="btn ghost" href="#/results">
+            <a className="btn ghost" href="#/me" title="My team">
               {short(account)}
             </a>
           ) : (

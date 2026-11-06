@@ -8,8 +8,9 @@ Built for the [World is Flat hackathon](https://worldisflat.fun/build). Categori
 
 1. **Draft five** of the 35 Stock Tokens and ETFs on Robinhood Chain that have a Chainlink feed (NVDA, TSLA, PLTR, GME, SPY, QQQ, GLD…). Your first pick is the **captain** and counts double.
 2. **Enter with $WIF.**
-   - **The Week** runs from Monday 00:00 UTC to Friday's closing bell; entry is 1,000 $WIF.
-   - **The Sprint** runs each weekday from the opening bell to the close; entry is 1,000 $WIF.
+   - **The Week** runs from Monday 00:00 UTC to Friday's closing bell.
+   - **The Sprint** runs each weekday from the opening bell to the close.
+   - **Pick your stake.** Every game opens at three stake tiers, 1,000 (Kickabout), 10,000 (Pro League) and 100,000 $WIF (Whale Cup). Each tier is its own round with its own pot, so you only play against people who put up the same stake. Tiers live in `shared/tiers.ts`.
    - Each wallet can file up to 3 lineups per round.
 3. **Score** = (2 × captain return + the other four) / 6, using the Chainlink price at the exact lock and end times.
 4. **Settle.**
