@@ -6,7 +6,7 @@ import { state, refreshRounds } from "./state.ts";
 
 // Schedule (US equities, EST from Nov 1): the Week locks Monday 00:00 UTC and ends at Friday's closing
 // bell (21:00 UTC); a Sprint runs each weekday from the opening bell (14:30) to the close (21:00).
-const WEEK_FEE = parseUnits(process.env.WEEK_FEE ?? "5000", 18);
+const WEEK_FEE = parseUnits(process.env.WEEK_FEE ?? "1000", 18);
 const SPRINT_FEE = parseUnits(process.env.SPRINT_FEE ?? "1000", 18);
 const DAY = 86_400;
 

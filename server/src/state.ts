@@ -121,7 +121,13 @@ export async function refreshRounds() {
     }),
   );
 
-  state.rounds = rounds.map(({ id, r, entries, start, rets }) => {
+  // a later round with the same window replaces an empty one (e.g. the Week re-opened at a lower fee)
+  const replaced = (id: number, r: (typeof rounds)[number]["r"]) =>
+    STATUS[r.status] === "open" &&
+    r.entryCount === 0 &&
+    rounds.some((o) => o.id > id && o.r.lockTime === r.lockTime && o.r.endTime === r.endTime);
+
+  state.rounds = rounds.filter(({ id, r }) => !replaced(id, r)).map(({ id, r, entries, start, rets }) => {
     const status = STATUS[r.status];
     const startPrices = start.map((p) => Number(p) / 1e8);
     let returns: number[] = [];

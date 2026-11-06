@@ -24,7 +24,7 @@ WIF League is fantasy sports where the players are Stock Tokens. You draft five 
 
 There are two games on a loop:
 - **The Sprint**: one trading day, bell to bell, 1,000 $WIF a lineup.
-- **The Week**: Monday to Friday's close, 5,000 $WIF a lineup.
+- **The Week**: Monday to Friday's close, 1,000 $WIF a lineup.
 
 When a round ends the contract pays the pot out by itself: 50 / 30 / 20 to the top three, 10% burned with $WIF's own `burn()`, and 10% rolled into the next pot. Winners can swap their $WIF straight into a real Stock Token like NVDA through KyberSwap's Robinhood Chain router, without leaving the app.
 

@@ -13,7 +13,7 @@ built for @WIFonRH's World is Flat hackathon
 two games on a loop:
 
 the Sprint: one trading day, bell to bell, 1,000 $WIF
-the Week: Monday to Friday's close, 5,000 $WIF
+the Week: Monday to Friday's close, 1,000 $WIF
 
 your first pick is captain and counts double. top 3 split 80% of the pot.
 
